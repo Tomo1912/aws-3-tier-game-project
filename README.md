@@ -38,5 +38,6 @@ This project demonstrates the deployment of a classic 3-tier architecture on AWS
 ## Screenshots
 
 *Game running in the browser:*
+![EC89AF8D-7584-4E79-BE75-5DB8BA5C089E_1_105_c](https://github.com/user-attachments/assets/0880dcdd-b0c4-4568-af15-29669f4d736a)
 
-*(Ovdje možeš dodati link na screenshot, npr. ![Game Screenshot](screenshots/ime-slike.png))*
+**
