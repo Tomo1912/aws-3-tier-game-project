@@ -1,37 +1,53 @@
 # AWS 3-Tier Web Application: Brick Breaker Game
 
-This project demonstrates the deployment of a classic 3-tier architecture on AWS from scratch. The application is a simple "Brick Breaker" web game where the frontend is separated from the backend logic, which handles high scores stored in a relational database.
+This project demonstrates a hands-on implementation of a classic 3-tier architecture on AWS, built from the ground up. The application is a playable "Brick Breaker" web game with a backend API to handle high scores, which are persisted in a relational database.
 
-## Architecture Diagram
-
-
-*(Možeš kasnije ovdje dodati sliku arhitekture)*
+This repository contains the application code and documentation for the project.
 
 ---
 
-## Tiers & AWS Services Used
+## Architecture Overview
+
+The infrastructure is designed following AWS best practices for security, scalability, and high availability.
+
+* **VPC:** A custom Virtual Private Cloud provides a logically isolated section of the AWS Cloud. It is configured with:
+    * **Public Subnets:** For resources that need to be internet-facing, like the web server.
+    * **Private Subnets:** For backend resources like the application server and database, which should not be directly accessible from the internet.
+    * **Availability Zones:** The VPC spans two AZs to ensure high availability and fault tolerance.
+* **Networking:** An **Internet Gateway** provides access to the internet for the public subnets. **NAT Gateways** are placed in the public subnets to allow resources in the private subnets (like the application server) to initiate outbound traffic for software updates, while remaining unreachable from the external internet.
+* **Security:**
+    * **Security Groups** act as stateful virtual firewalls, controlling traffic between the tiers at the instance level. Rules are configured to enforce the principle of least privilege.
+    * **Network ACLs** (default settings) provide an additional, stateless layer of security at the subnet level.
+
+---
+
+## Tiers & AWS Services Implemented
 
 ### 1. Web Tier (Presentation Layer)
-* **Component:** A static HTML/CSS/JavaScript frontend for the Brick Breaker game.
-* **AWS Service:** An **Amazon EC2** instance running in a **public subnet**.
-* **Details:** Nginx is used as the web server to serve the static files. This tier is the public entry point for users and is configured with a Security Group that allows HTTP/HTTPS traffic from anywhere. It also acts as a reverse proxy, forwarding API calls to the private Application Tier.
+* **Description:** Serves the static frontend content (HTML, CSS, JavaScript) of the Brick Breaker game to the user's browser.
+* **AWS Service:** **Amazon EC2** instance running an Ubuntu Server.
+* **Configuration:**
+    * Launched in a **public subnet**.
+    * Assigned a public IP address.
+    * **Nginx** is installed and configured as the web server.
+    * Nginx also functions as a **reverse proxy**, securely forwarding API calls from the client (e.g., `/api/score`) to the private Application Tier.
+    * The `web-sg` Security Group allows inbound traffic on ports 80 (HTTP) and 443 (HTTPS) from anywhere (`0.0.0.0/0`).
 
 ### 2. Application Tier (Logic Layer)
-* **Component:** A simple Python **Flask API** with endpoints to `GET` and `POST` high scores.
-* **AWS Service:** An **Amazon EC2** instance running in a **private subnet**.
-* **Details:** This server is not directly accessible from the internet. Its Security Group only allows traffic from the Web Tier, ensuring the application logic is protected. It reads database credentials from environment variables for security.
+* **Description:** Handles the core business logic. It exposes a RESTful API built with Python and Flask to create and retrieve high scores.
+* **AWS Service:** **Amazon EC2** instance running an Ubuntu Server.
+* **Configuration:**
+    * Launched in a **private subnet**, making it inaccessible from the public internet.
+    * Does not have a public IP address.
+    * The Flask application reads database credentials securely from environment variables, not from hardcoded text.
+    * The `app-sg` Security Group only allows inbound traffic on port 8080 from the `web-sg`, and SSH traffic from the `web-sg` (acting as a bastion host).
 
 ### 3. Database Tier (Data Layer)
-* **Component:** A MySQL database to store player names and scores.
-* **AWS Service:** **Amazon RDS (Relational Database Service)** running in a **private subnet**.
-* **Details:** The database is in the most secure part of the network. Its Security Group is the most restrictive, only allowing traffic on the MySQL port (3306) from the Application Tier's Security Group.
-
----
-
-## Core Infrastructure
-* **VPC:** A custom Virtual Private Cloud was built with both public and private subnets across two Availability Zones to ensure high availability.
-* **NAT Gateway:** A NAT Gateway was used to allow the private application server to access the internet for software updates without being publicly exposed.
-* **Security:** Communication between tiers is strictly controlled by Security Groups, implementing the principle of least privilege. SSH access to the private application server is only possible by using the public web server as a "jumphost" or "bastion host".
+* **Description:** Persists application data, specifically the high scores.
+* **AWS Service:** **Amazon RDS** for MySQL.
+* **Configuration:**
+    * Launched in a **private subnet** for maximum security.
+    * The `baza-sg` Security Group is the most restrictive, only allowing inbound traffic on the MySQL port (3306) from the `app-sg`.
 
 ---
 
