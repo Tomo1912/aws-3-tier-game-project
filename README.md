@@ -62,10 +62,30 @@ The infrastructure is designed following AWS best practices for security, scalab
 
 ### Direct Database Verification
 
-To confirm the end-to-end functionality of the entire architecture, a direct connection was established to the MySQL database from within the private `app-server`. The screenshot below shows the output of a `SELECT * FROM scores;` query.
+### Direct Database Verification
 
+To confirm the end-to-end functionality of the entire architecture, a direct connection was established to the MySQL database from the private `app-server`. The output below shows the successful connection and the result of a `SELECT * FROM scores;` query, providing definitive proof that the data submitted from the web frontend was persisted correctly in the database.
 
+```sql
+ubuntu@ip-10-0-133-35:~$ mysql -h igra-baza.cjwmocg8e2o7.eu-central-1.rds.amazonaws.com -u admin -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 117
+Server version: 8.0.42 Source distribution
 
-*![18026546-FEF3-48C8-812D-6F34238A1AD3](https://github.com/user-attachments/assets/d71a0c1e-66f3-48a4-94af-ba99339a62ee)*
+Copyright (c) 2000, 2025, Oracle and/or its affiliates.
 
-**
+...
+
+mysql> USE igrabaza;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> SELECT * FROM scores;
++----+-------+-------+---------------------+
+| id | name  | score | created_at          |
++----+-------+-------+---------------------+
+|  1 | Igrac |   100 | 2025-08-27 13:09:08 |
++----+-------+-------+---------------------+
+1 row in set (0.00 sec)
