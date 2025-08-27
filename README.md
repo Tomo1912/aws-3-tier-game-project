@@ -56,4 +56,16 @@ The infrastructure is designed following AWS best practices for security, scalab
 *Game running in the browser:*
 ![EC89AF8D-7584-4E79-BE75-5DB8BA5C089E_1_105_c](https://github.com/user-attachments/assets/0880dcdd-b0c4-4568-af15-29669f4d736a)
 
+*Successfully saving a high score to the database:*
+
+![30624C1D-466D-433F-B98A-D4A05C904EF8](https://github.com/user-attachments/assets/48e334af-d48d-4c80-90a0-cc9c593aa1e7)
+
+### Direct Database Verification
+
+To confirm the end-to-end functionality of the entire architecture, a direct connection was established to the MySQL database from within the private `app-server`. The screenshot below shows the output of a `SELECT * FROM scores;` query.
+
+
+
+*![18026546-FEF3-48C8-812D-6F34238A1AD3](https://github.com/user-attachments/assets/d71a0c1e-66f3-48a4-94af-ba99339a62ee)*
+
 **
